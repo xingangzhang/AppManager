@@ -55,13 +55,12 @@ public class AppAdapterGrid extends RecyclerView.Adapter<AppAdapterGrid.AppViewH
         }
         setButtonEvent(holder, info);
     }
-    private void setButtonEvent(AppViewHolder holder, final AppInfo appInfo){
-        final ImageView card = holder.imIcon;
+
+    private void setButtonEvent(AppViewHolder holder, final AppInfo appInfo) {
+        final CardView card = holder.cvCard;
         card.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Activity activity = (Activity) mContext;
-
                 Intent intent = new Intent(mContext, AppActivity.class);
                 intent.putExtra("app_name", appInfo.getName());
                 intent.putExtra("app_apk", appInfo.getAPK());
@@ -71,8 +70,7 @@ public class AppAdapterGrid extends RecyclerView.Adapter<AppAdapterGrid.AppViewH
                 Bitmap bitmap = ((BitmapDrawable) appInfo.getIcon()).getBitmap();
 
                 int size = bitmap.getByteCount();
-                while (size > 450000)
-                {
+                while (size > 450000) {
                     Matrix matrix = new Matrix();
                     matrix.setScale(0.6f, 0.6f);
                     bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
@@ -80,7 +78,6 @@ public class AppAdapterGrid extends RecyclerView.Adapter<AppAdapterGrid.AppViewH
                 }
 
                 intent.putExtra("app_icon", bitmap);
-
                 intent.putExtra("app_isSystem", appInfo.isSystem());
 //                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 //                    String transitionName = mContext.getResources().getString(R.string.transition_app_icon);
@@ -94,7 +91,14 @@ public class AppAdapterGrid extends RecyclerView.Adapter<AppAdapterGrid.AppViewH
                 mContext.startActivity(intent);
             }
         });
+        card.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                return false;
+            }
+        });
     }
+
     @Override
     public int getItemCount() {
         return mAppInfoList.size();
@@ -109,6 +113,7 @@ public class AppAdapterGrid extends RecyclerView.Adapter<AppAdapterGrid.AppViewH
         ImageView imIcon;
         TextView tvName;
         CardView cvCard;
+
         public AppViewHolder(View v) {
             super(v);
             imIcon = (ImageView) v.findViewById(R.id.apk_item_grid_icon);

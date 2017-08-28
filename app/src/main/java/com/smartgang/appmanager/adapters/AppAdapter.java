@@ -5,6 +5,7 @@ import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.support.v7.widget.CardView;
@@ -43,9 +44,11 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.AppViewHolder> i
 
     @Override
     public void onBindViewHolder(AppViewHolder holder, int position) {
-        holder.tvApk.setText(mListAppInfo.get(position).getAPK());
-        holder.imIcon.setImageDrawable(mListAppInfo.get(position).getIcon());
-        setButtonEvent(holder, mListAppInfo.get(position));
+        AppInfo info = mListAppInfo.get(position);
+        holder.tvName.setText(info.getName());
+        holder.tvApk.setText(info.getAPK());
+        holder.imIcon.setImageDrawable(info.getIcon());
+        setButtonEvent(holder, info);
     }
 
     private void setButtonEvent(AppViewHolder holder, final AppInfo appInfo) {
@@ -63,6 +66,16 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.AppViewHolder> i
                 intent.putExtra("app_source", appInfo.getSource());
                 intent.putExtra("app_data", appInfo.getData());
                 Bitmap bitmap = ((BitmapDrawable) appInfo.getIcon()).getBitmap();
+
+                int size = bitmap.getByteCount();
+                while (size > 450000)
+                {
+                    Matrix matrix = new Matrix();
+                    matrix.setScale(0.6f, 0.6f);
+                    bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+                    size = bitmap.getByteCount();
+                }
+
                 intent.putExtra("app_icon", bitmap);
                 intent.putExtra("app_isSystem", appInfo.isSystem());
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {

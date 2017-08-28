@@ -10,22 +10,28 @@ import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 import android.widget.ListView;
 
 import com.smartgang.appmanager.R;
 import com.smartgang.appmanager.adapters.AppAdapter;
 import com.smartgang.appmanager.adapters.AppAdapterGrid;
+import com.smartgang.appmanager.listeners.RecyclerViewScrollListener;
 import com.smartgang.appmanager.utils.AppInfo;
+import com.smartgang.appmanager.utils.AppOperation;
 import com.yalantis.phoenix.PullToRefreshView;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import xyz.danoz.recyclerviewfastscroller.vertical.VerticalRecyclerViewFastScroller;
 
 public class MainActivity extends AppCompatActivity {
     private PullToRefreshView mPullToRefreshView;
     private ListView mListView;
     private List<String> mListDataString;
     private RecyclerView mRecyclerView;
+    private static VerticalRecyclerViewFastScroller fastScroller;
     private List<AppInfo> mAppInfoList;
     private List<AppInfo> mSystemAppInfoList;
     private AppAdapter mAppAdapter;
@@ -36,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mContext = this;
+        AppOperation.checkPermissions(mContext);
         initData();
         initRefreshViewResource();
         initRecyclerView();
@@ -68,7 +75,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void initRecyclerView() {
         mRecyclerView = (RecyclerView)findViewById(R.id.recycler_view);
+        fastScroller = (VerticalRecyclerViewFastScroller) findViewById(R.id.fast_scroller);
         mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.setLayoutManager(new GridLayoutManager(this, 4));
     }
 
@@ -81,14 +90,22 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            mAppInfoList.clear();
+            mRecyclerView.setAdapter(null);
         }
 
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
+            //fastScroller.setVisibility(View.VISIBLE);
             mAppAdapter = new AppAdapter(mContext, mAppInfoList);
             mAppAdapterGrid = new AppAdapterGrid(mContext, mAppInfoList);
             mRecyclerView.setAdapter(mAppAdapterGrid);
+            //fastScroller.setRecyclerView(mRecyclerView);
+
+            //fastScroller.setR
+            //mRecyclerView.setOnScrollListener(fastScroller.getOnScrollListener());
+            //mRecyclerView.addOnScrollListener(fastScroller.getOnScrollListener());
         }
 
         @Override
